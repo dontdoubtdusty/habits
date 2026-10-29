@@ -112,6 +112,13 @@ body.dragmode{user-select:none;-webkit-user-select:none;cursor:grabbing}
 
 /* ===== App-specific styles go below this line, one commented section per feature ===== */
 
+/* ===== Water ===== */
+.wtop{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}.wtop b{font:600 28px/1.1 var(--fd)}
+.glasses{display:flex;flex-wrap:wrap;gap:2px;margin:10px -4px 4px}
+.glasses button{background:none;box-shadow:none;color:var(--pc);padding:4px;border-radius:10px}
+.glasses button svg{display:block;transition:transform .25s var(--bounce)}.glasses button.f svg{transform:scale(1.06)}
+.glasses button:not(.f){color:color-mix(in srgb,var(--mu) 55%,transparent)}
+
 @media(prefers-reduced-motion:reduce){*,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
 
 </style></head><body><header class="top"><span class="tt"><svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#f0378f"/><circle cx="16" cy="16" r="12.2" fill="#ffe0ef"/><circle cx="16" cy="16" r="10.6" fill="#ff7ab8"/><path d="M16 6v20M6 16h20M8.6 8.6l14.8 14.8M23.4 8.6 8.6 23.4" stroke="#ffe0ef" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="16" r="2.2" fill="#ffe0ef"/></svg><span><span class="jz">Big Healthy</span> Habits</span></span><button id="gear" class="gear" aria-label="Settings" data-a="gear"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header><div class="vclip"><main id="app" class="view"></main></div><nav id="nav"></nav><div id="toast" role="status" aria-live="polite"></div><div id="dlg" hidden></div>
@@ -202,6 +209,7 @@ const bkNag=()=>needBk()?`<div class="card wide"><h3><span>Back up your habits?<
 // 5. CALCULATIONS (pure reads of S)
 // =====================================================================
 const rSecs=r=>sum(r.steps,s=>num(s.s))*Math.max(1,num(r.rounds));   // one full play of a routine
+const water=()=>num(S.water[tdy()]);
 const mins=s=>s<60?s+' sec':Math.round(s/60)+' min';
 
 // =====================================================================
@@ -213,6 +221,8 @@ const C=p=>`<input type="checkbox" ${get(p)?'checked':''} data-p="${p}" data-t="
 const ICX='<svg class="ic" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
 const X=(p,i)=>`<button class="x" data-a="del" data-p="${p}" data-i="${i}" aria-label="Delete">${ICX}</button>`;
 const DH=`<span class="dh" title="Drag to reorder"><svg viewBox="0 0 10 16" width="10" height="16" aria-hidden="true"><g fill="currentColor"><circle cx="2.5" cy="3" r="1.5"/><circle cx="7.5" cy="3" r="1.5"/><circle cx="2.5" cy="8" r="1.5"/><circle cx="7.5" cy="8" r="1.5"/><circle cx="2.5" cy="13" r="1.5"/><circle cx="7.5" cy="13" r="1.5"/></g></svg></span>`;
+// A drinking glass, filled or empty
+const GLASS=f=>`<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M5 3h14l-1.7 17.2a2 2 0 0 1-2 1.8H8.7a2 2 0 0 1-2-1.8z" fill="${f?'currentColor':'none'}" fill-opacity=".85" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>${f?'<path d="M7.6 8h8.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>':''}</svg>`;
 const flash=()=>FL?`<div class="mu pos" style="margin-top:6px">${esc(FL)}</div>`:'';
 
 // ---- Popup with a choice of buttons. btns: [label, button class, callback or null to just close] ----
@@ -230,9 +240,16 @@ function hello(){const h=new Date().getHours(),g=h<5?'Up late':h<12?'Good mornin
 // First-run card: shown until dismissed (or replaced by an imported backup)
 const welcome=()=>`<div class="card wide"><h3><span>Welcome to Big Healthy</span><button class="g" data-a="welcomeOff" aria-label="Dismiss">${ICX}</button></h3><p class="mu" style="margin:0">Start a stretch, interval or breathing routine on the Move tab. Add your medications on the Meds tab and tick them off here each day.</p></div>`;
 
+// Water: one glass per tap. Tapping the last full glass empties it again.
+function waterCard(){const n=water(),g=Math.max(1,num(S.set.water)),k=Math.min(24,Math.max(g,n+1));
+ return `<div class="card"><h2>Water</h2><div class="wtop"><b>${n} <span class="mu" style="font:inherit;font-size:16px">of ${g} glasses</span></b>${n>=g?'<span class="tag">Goal reached</span>':''}</div>
+ <div class="bar"><i style="width:${Math.min(100,Math.round(n/g*100))}%"></i></div>
+ <div class="glasses">${Array.from({length:k},(_,i)=>`<button class="${i<n?'f':''}" data-a="glass" data-n="${i+1}" aria-label="${i+1} glass${i?'es':''}">${GLASS(i<n)}</button>`).join('')}</div>
+ <div class="row"><button class="g bd" data-a="wSub" ${n?'':'disabled'}>Remove one</button><button data-a="wAdd" style="flex:1">Add a glass</button></div></div>`}
+
 function vToday(){
  return hello()+(S.set.welcome?welcome():'')+bkNag()+
- `<div class="pcb"><span>Today</span><b>${longDate(tdy())}</b></div>`}
+ `<div class="pcb"><span>Today</span><b>${longDate(tdy())}</b></div>`+waterCard()}
 
 function vMove(){
  return `<div class="card"><h2>Routines</h2>${S.routines.map(r=>`<div class="ln"><span>${esc(r.n)}</span><b class="mu">${mins(rSecs(r))}</b></div>`).join('')||'<p class="mu" style="margin:0">Nothing here yet.</p>'}</div>`}
@@ -241,7 +258,8 @@ function vMeds(){
  return `<div class="card"><h2>Medications</h2><p class="mu" style="margin:0">Nothing here yet.</p></div>`}
 
 function vMore(){
- return `<div class="card"><h2>Settings</h2><div class="sec">Appearance</div><div class="seg qm">${[['system','Auto'],['daynight','Day/Night'],['light','Light'],['dark','Dark']].map(([v,l])=>`<button class="${S.set.theme==v?'on':''}" data-a="theme" data-v="${v}">${l}</button>`).join('')}</div>${window.Feedback?Feedback.view('qm'):''}</div>
+ return `<div class="card"><h2>Settings</h2><div class="sec">Appearance</div><div class="seg qm">${[['system','Auto'],['daynight','Day/Night'],['light','Light'],['dark','Dark']].map(([v,l])=>`<button class="${S.set.theme==v?'on':''}" data-a="theme" data-v="${v}">${l}</button>`).join('')}</div>${window.Feedback?Feedback.view('qm'):''}
+ <div class="sec" style="margin-top:12px">Daily water goal</div><div class="row"><input type="number" min="1" max="24" step="1" inputmode="numeric" value="${esc(S.set.water)}" data-a="wGoal"><span class="mu">glasses a day</span></div></div>
  ${window.CloudSync?CloudSync.view():''}
  <div class="card"><h2>Backup & restore</h2><p class="mu">Everything is saved in this browser only. Download a backup now and then to keep it safe, or to move it to another device.</p>
  <p class="mu" style="font-weight:700">${S.set.lastBk?'Last backup: '+longDate(iso(new Date(S.set.lastBk))):'No backup yet.'}</p>
@@ -251,6 +269,9 @@ function vMore(){
 // =====================================================================
 // 8. ACTIONS (buttons/selects/checkboxes with data-a="name" call ACT.name(dataset, element))
 // =====================================================================
+// Set today's glasses; a toast and a buzz when you first reach the goal
+function setWater(n){const t=tdy(),was=water(),g=num(S.set.water);n=Math.max(0,Math.min(99,n));if(n)S.water[t]=n;else delete S.water[t];save();R();
+ if(was<g&&n>=g)toast('Done! You reached your water goal');else window.Feedback&&Feedback.hap('tick')}
 function bkFile(){const n=new Date(),p=x=>String(x).padStart(2,'0'),d=iso(n),t=p(n.getHours())+'-'+p(n.getMinutes());return new File([JSON.stringify({app:LS,exported:n.toISOString(),exportedLocal:d+' '+t.replace('-',':'),data:S},null,1)],APP_NAME.toLowerCase().replace(/\s+/g,'-')+'-backup-'+d+'_'+t+'.json',{type:'application/json'})}
 function exportData(){flush();const f=bkFile(),u=URL.createObjectURL(f),a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);markBk()}
 async function shareData(){flush();const f=bkFile();try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:APP_NAME+' Backup'});markBk()}else{exportData();alert('Sharing files is not supported here, so the backup was downloaded instead.')}}catch(e){if(e&&e.name!=='AbortError')exportData()}}
@@ -261,6 +282,9 @@ const ACT={
  dlgBtn:d=>{const f=DLG&&DLG.b[+d.i];closeDlg();f&&f()},
  // generic rows
  del:d=>del(d.p,+d.i),
+ // water
+ glass:d=>setWater(+d.n==water()?+d.n-1:+d.n), wAdd:()=>setWater(water()+1), wSub:()=>setWater(water()-1),
+ wGoal:(d,el)=>{S.set.water=Math.max(1,Math.min(24,Math.round(num(el.value))||8));save();R();toast('Saved your water goal')},
  // settings
  share:shareData, export:exportData, pickFile:()=>document.getElementById('bkf').click(),
  importFile:(d,el)=>importFile(el),

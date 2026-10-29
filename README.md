@@ -5,6 +5,7 @@ Stretch routines, an interval timer, breathing exercises, water and medication c
 ## Features
 
 - Three tabs: **Today** for what's due today, **Move** for stretch, interval and breathing routines, and **Meds** for your medications
+- Water tracking on **Today**: tap a glass for each one you drink, with a progress bar toward your daily goal (8 glasses unless you change it under **Settings > Daily water goal**)
 - Light, dark and automatic themes, plus a Day/Night option that switches to dark at 6pm and back to light at 6am
 - Light haptic ticks when you save, delete, finish or toggle something, and buttons that visibly press in on every tap. Turn haptics off under **Settings > Haptics**.
 - Backups you can share, download and import, with a weekly reminder
