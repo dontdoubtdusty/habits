@@ -5,6 +5,10 @@ Stretch routines, an interval timer, breathing exercises, water and medication c
 ## Features
 
 - Three tabs: **Today** for what's due today, **Move** for stretch, interval and breathing routines, and **Meds** for your medications
+- Routines on **Move**, grouped into Stretch, Intervals and Breathing, with starter routines to begin with (Morning stretch, Desk break, Intervals 30/15, Box breathing and 4-7-8 breathing)
+- Edit any routine: its name, kind, number of rounds, and steps with their seconds. Drag steps to reorder, and delete with Undo. Make your own with **New routine**.
+- A full-screen player for every routine: a 5-second get-ready, a countdown ring, the next step, round count, pause, skip and back. Beeps mark each new step and the last 3 seconds. The screen stays awake while it plays, but if you lock the phone the browser may pause it.
+- Finished routines show under **Recently** on the Move tab
 - Medications on **Meds**: name, dose and one or more times a day, edited in place, with drag to reorder and Undo on delete
 - Today's doses on **Today** in time order: tick each one off as you take it, see when you took it, and spot missed ones by their **Due** tag
 - While the app is open, a pop-up tells you when a dose comes due. It can't alert you when the app is closed, so keep a phone alarm for anything you can't miss.

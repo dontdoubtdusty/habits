@@ -122,6 +122,36 @@ body.dragmode{user-select:none;-webkit-user-select:none;cursor:grabbing}
 .times input[type=time]{width:auto;background:transparent;padding:6px 4px 6px 10px}.times button.x{padding:6px}
 .newmed{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.newmed input[type=text]:first-child{grid-column:1/-1}
 
+/* ===== Routines ===== */
+.rt{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--bd)}.rt:first-of-type{border-top:0;padding-top:2px}
+.rt .nm{flex:1;min-width:0}.rt .nm b{display:block;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rt .go{flex:none;width:44px;height:44px;padding:0;border-radius:50%;display:grid;place-items:center}
+.rt button.g{padding:8px}
+.edr{margin:2px 0 10px;padding:12px;border-radius:16px;background:color-mix(in srgb,var(--pc) 6%,var(--fld))}
+.edr .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.edr label{display:block}.edr label .mu{display:block;margin:0 0 3px 2px;font-size:12px;font-weight:700}
+.edr input[type=number]{width:100%;text-align:left}.edr .row input[type=number]{width:64px;text-align:right}
+.edr .row.ed input[type=text]{background:transparent}
+
+/* ===== Player ===== */
+#play{position:fixed;inset:0;z-index:32;display:flex;flex-direction:column;align-items:center;gap:10px;padding:calc(14px + env(safe-area-inset-top,0px)) 20px calc(22px + env(safe-area-inset-bottom,0px));background:radial-gradient(700px 420px at 50% 0,color-mix(in srgb,var(--pc) 22%,transparent),transparent 70%),var(--bg);color:var(--tx);animation:dfade .2s ease-out;overflow-y:auto}
+#play[hidden]{display:none}
+#play .ptop{align-self:stretch;display:flex;align-items:center;justify-content:space-between;gap:8px}#play .ptop b{font:600 18px/1.2 var(--fd);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#play .pbar{align-self:stretch;height:6px;border-radius:99px;background:var(--fld);overflow:hidden}#play .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--pc),var(--pc2))}
+#play .rd{font-size:13px;font-weight:800;color:var(--pc);background:color-mix(in srgb,var(--pc) 13%,transparent);padding:5px 12px;border-radius:99px;margin-top:6px}
+#play .stp{font:600 30px/1.15 var(--fd);text-align:center;margin:6px 0 0;min-height:1.15em}
+.ring{position:relative;width:min(72vw,280px);aspect-ratio:1;margin:8px 0}.ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring .tr{stroke:var(--fld)}.ring .fg{stroke:url(#pg);transition:stroke-dashoffset .25s linear}
+.ring .rnum{position:absolute;inset:0;display:grid;place-items:center;font:600 64px/1 var(--fd);letter-spacing:-1px}
+#play.rest .ring .fg{stroke:color-mix(in srgb,var(--mu) 60%,transparent)}#play.rest .stp{color:var(--mu)}
+#play .nx{min-height:1.4em;text-align:center}
+#play .ctl{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:auto}
+#play .ctl button{width:58px;height:58px;padding:0;border-radius:50%;display:grid;place-items:center}
+#play .ctl button.big{width:78px;height:78px}
+#play .ctl button.g{background:var(--card);border:1px solid var(--bd);color:var(--tx)}
+#play .fin{display:flex;flex-direction:column;align-items:center;gap:12px;margin:auto 0;text-align:center}#play .fin b{font:600 34px/1.1 var(--fd)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}.confetti i{position:absolute;top:-20px;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--dx),105vh) rotate(var(--r))}}
+
 /* ===== Water ===== */
 .wtop{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}.wtop b{font:600 28px/1.1 var(--fd)}
 .glasses{display:flex;flex-wrap:wrap;gap:2px;margin:10px -4px 4px}
@@ -131,7 +161,7 @@ body.dragmode{user-select:none;-webkit-user-select:none;cursor:grabbing}
 
 @media(prefers-reduced-motion:reduce){*,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
 
-</style></head><body><header class="top"><span class="tt"><svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#f0378f"/><circle cx="16" cy="16" r="12.2" fill="#ffe0ef"/><circle cx="16" cy="16" r="10.6" fill="#ff7ab8"/><path d="M16 6v20M6 16h20M8.6 8.6l14.8 14.8M23.4 8.6 8.6 23.4" stroke="#ffe0ef" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="16" r="2.2" fill="#ffe0ef"/></svg><span><span class="jz">Big Healthy</span> Habits</span></span><button id="gear" class="gear" aria-label="Settings" data-a="gear"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header><div class="vclip"><main id="app" class="view"></main></div><nav id="nav"></nav><div id="toast" role="status" aria-live="polite"></div><div id="dlg" hidden></div>
+</style></head><body><header class="top"><span class="tt"><svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#f0378f"/><circle cx="16" cy="16" r="12.2" fill="#ffe0ef"/><circle cx="16" cy="16" r="10.6" fill="#ff7ab8"/><path d="M16 6v20M6 16h20M8.6 8.6l14.8 14.8M23.4 8.6 8.6 23.4" stroke="#ffe0ef" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="16" r="2.2" fill="#ffe0ef"/></svg><span><span class="jz">Big Healthy</span> Habits</span></span><button id="gear" class="gear" aria-label="Settings" data-a="gear"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header><div class="vclip"><main id="app" class="view"></main></div><nav id="nav"></nav><div id="toast" role="status" aria-live="polite"></div><div id="play" hidden></div><div id="dlg" hidden></div>
 <script src="feedback.js"></script>
 <script src="sync.js"></script>
 <script>
@@ -173,6 +203,7 @@ const stepDate=(d,n)=>{const x=new Date(d+'T00:00');x.setDate(x.getDate()+n);ret
 // =====================================================================
 let S,T='today';                          // data, current tab
 let O={},DLG=null,FL='';                  // UI-only: open <details>, open popup, flash message
+let EDR=null,PL=null;                     // UI-only: routine open in the editor, the routine playing
 
 const presets=()=>PRESETS.map(([n,k,rounds,st])=>({id:uid('r'),n,k,rounds,steps:st.map(([n,s])=>({id:uid('s'),n,s}))}));
 // A brand-new install starts with the starter routines and nothing else
@@ -225,6 +256,9 @@ const doses=()=>{const tk=S.taken[tdy()]||{},now=new Date(),hm=String(now.getHou
  return S.meds.flatMap(m=>[...new Set(m.times.filter(Boolean))].map(t=>({m,t,k:m.id+'@'+t,at:tk[m.id+'@'+t],due:t<=hm}))).sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0)};
 const tm=t=>!t?'':new Date('2000-01-01T'+t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});   // '08:00' -> '8:00 AM'
 const clockOf=ms=>new Date(ms).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+const fmt=s=>s>=60?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):String(s);   // 75 -> '1:15'
+const dur=s=>s>=60?fmt(s):s+'s';
+const KIND={stretch:'Stretch',interval:'Intervals',breath:'Breathing'};
 const mins=s=>s<60?s+' sec':Math.round(s/60)+' min';
 
 // =====================================================================
@@ -238,6 +272,8 @@ const X=(p,i)=>`<button class="x" data-a="del" data-p="${p}" data-i="${i}" aria-
 const DH=`<span class="dh" title="Drag to reorder"><svg viewBox="0 0 10 16" width="10" height="16" aria-hidden="true"><g fill="currentColor"><circle cx="2.5" cy="3" r="1.5"/><circle cx="7.5" cy="3" r="1.5"/><circle cx="2.5" cy="8" r="1.5"/><circle cx="7.5" cy="8" r="1.5"/><circle cx="2.5" cy="13" r="1.5"/><circle cx="7.5" cy="13" r="1.5"/></g></svg></span>`;
 // A drinking glass, filled or empty
 const GLASS=f=>`<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M5 3h14l-1.7 17.2a2 2 0 0 1-2 1.8H8.7a2 2 0 0 1-2-1.8z" fill="${f?'currentColor':'none'}" fill-opacity=".85" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>${f?'<path d="M7.6 8h8.8" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>':''}</svg>`;
+const IC=(d,w=22)=>`<svg viewBox="0 0 24 24" width="${w}" height="${w}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const I_PLAY='<path d="M7 4.5v15l12.5-7.5z" fill="currentColor"/>',I_PAUSE='<path d="M8 5v14M16 5v14" stroke-width="3"/>',I_NEXT='<path d="M5 5l10 7-10 7z" fill="currentColor"/><path d="M19 5v14"/>',I_PREV='<path d="M19 5L9 12l10 7z" fill="currentColor"/><path d="M5 5v14"/>',I_EDIT='<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>';
 const flash=()=>FL?`<div class="mu pos" style="margin-top:6px">${esc(FL)}</div>`:'';
 
 // ---- Popup with a choice of buttons. btns: [label, button class, callback or null to just close] ----
@@ -245,7 +281,7 @@ function openDlg(t,msg,btns){DLG={b:btns.map(x=>x[2])};const el=document.getElem
  el.innerHTML=`<div class="dbox" role="alertdialog" aria-modal="true" aria-labelledby="dlgt" aria-describedby="dlgm"><h3 id="dlgt">${esc(t)}</h3><p class="mu" id="dlgm">${esc(msg)}</p><div class="dbtns">${btns.map((x,i)=>`<button class="${x[1]}" data-a="dlgBtn" data-i="${i}">${esc(x[0])}</button>`).join('')}</div></div>`;
  el.hidden=false;const f=el.querySelector('button');f&&f.focus();navSync()}
 function closeDlg(){if(!DLG)return;DLG=null;const el=document.getElementById('dlg');el.hidden=true;el.innerHTML='';navSync()}
-document.addEventListener('keydown',e=>{if(e.key=='Escape'&&DLG)closeDlg()});
+document.addEventListener('keydown',e=>{if(e.key=='Escape'){if(DLG)closeDlg();else if(PL)stopPlay()}});
 
 // =====================================================================
 // 7. VIEWS (one function per tab; each returns HTML for #app)
@@ -271,8 +307,21 @@ function vToday(){const ds=doses(),dn=ds.filter(x=>x.at).length;
  return hello()+(S.set.welcome?welcome():'')+bkNag()+
  (ds.length?`<div class="pcb"><span>Doses taken today</span><b>${dn} of ${ds.length}</b></div>`:`<div class="pcb"><span>Today</span><b>${longDate(tdy())}</b></div>`)+medsCard()+waterCard()}
 
-function vMove(){
- return `<div class="card"><h2>Routines</h2>${S.routines.map(r=>`<div class="ln"><span>${esc(r.n)}</span><b class="mu">${mins(rSecs(r))}</b></div>`).join('')||'<p class="mu" style="margin:0">Nothing here yet.</p>'}</div>`}
+// Editor for one routine, shown under it in the list
+function editor(r,i){const P='routines.'+i;
+ return `<div class="edr"><label><span class="mu">Name</span>${I(P+'.n')}</label>
+ <div class="two"><label><span class="mu">Kind</span><select data-p="${P}.k" data-t="s">${Object.entries(KIND).map(([k,l])=>`<option value="${k}" ${r.k==k?'selected':''}>${l}</option>`).join('')}</select></label>
+ <label><span class="mu">Rounds</span><input type="number" min="1" max="99" step="1" inputmode="numeric" value="${esc(r.rounds)}" data-p="${P}.rounds" data-t="n"></label></div>
+ <span class="sec" style="margin-top:4px">Steps <span style="text-transform:none;letter-spacing:0;font-weight:600">(seconds)</span></span>
+ ${r.steps.map((x,j)=>`<div class="row ed" data-dl="${P}.steps" data-di="${j}">${DH}${I(P+'.steps.'+j+'.n')}<input type="number" min="1" step="1" inputmode="numeric" value="${esc(x.s)}" data-p="${P}.steps.${j}.s" data-t="n" aria-label="Seconds">${X(P+'.steps',j)}</div>`).join('')||'<p class="mu">No steps yet.</p>'}
+ <div class="row" style="margin-top:6px"><button class="g bd" data-a="stepAdd" data-i="${i}">Add a step</button><span style="flex:1"></span><button class="x" data-a="rtDel" data-i="${i}">Delete routine</button></div>
+ <button data-a="rtDone" style="width:100%;margin-top:8px">Done</button></div>`}
+
+function vMove(){const recent=S.log.slice(-5).reverse();
+ return Object.entries(KIND).map(([k,l])=>{const rs=S.routines.map((r,i)=>[r,i]).filter(([r])=>r.k==k);if(!rs.length)return '';
+  return `<div class="card"><h2>${l}</h2>${rs.map(([r,i])=>`<div class="rt"><button class="go" data-a="play" data-i="${i}" aria-label="Start ${esc(r.n)}" ${r.steps.length?'':'disabled'}>${IC(I_PLAY,20)}</button><span class="nm"><b>${esc(r.n)}</b><span class="mu">${r.steps.length} step${r.steps.length==1?'':'s'}${r.rounds>1?' × '+r.rounds:''} · ${mins(rSecs(r))}</span></span><button class="g" data-a="rtEdit" data-i="${i}" aria-label="Edit ${esc(r.n)}">${IC(I_EDIT,19)}</button></div>${EDR==r.id?editor(r,i):''}`).join('')}</div>`}).join('')+
+ `<button class="g bd" data-a="rtNew" style="background:var(--card)">New routine</button>`+
+ (recent.length?`<div class="card"><h2>Recently</h2>${recent.map(x=>`<div class="ln"><span>${esc(x.n)}</span><b class="mu">${x.d==tdy()?'Today':fd(x.d)} · ${mins(x.sec)}</b></div>`).join('')}</div>`:'')}
 
 function vMeds(){
  return `<div class="card"><h2>Your medications</h2>${S.meds.map((m,i)=>`<div class="med" data-dl="meds" data-di="${i}"><div class="row ed">${DH}${I('meds.'+i+'.n')}${X('meds',i)}</div>
@@ -306,6 +355,42 @@ const NOTED=new Set();let MT0=1;
 function medTick(){if(!S)return;doses().forEach(x=>{const k=tdy()+x.k;if(x.due&&!x.at&&!NOTED.has(k)){if(!MT0)toast('Time for '+x.m.n+(x.m.dose?', '+x.m.dose:''));NOTED.add(k)}});
  if(MT0){MT0=0;return}if(!DLG&&!document.hidden&&T=='today'&&!document.activeElement.matches('input'))R()}
 setInterval(medTick,30000);
+// ---- Routine player: one engine for stretches, intervals and breathing ----
+// Each step ends at a fixed clock time, so the countdown stays right even if the phone sleeps for a moment.
+let AC=null,WL=null,PLT=0;
+function audio(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume()}catch(e){}}
+function beep(f=880,n=1,len=.14){if(!AC)return;try{const t=AC.currentTime;for(let k=0;k<n;k++){const o=k*.2,g=AC.createGain(),os=AC.createOscillator();os.type='sine';os.frequency.value=f;g.gain.setValueAtTime(0,t+o);g.gain.linearRampToValueAtTime(.3,t+o+.02);g.gain.linearRampToValueAtTime(0,t+o+len);os.connect(g);g.connect(AC.destination);os.start(t+o);os.stop(t+o+len+.02)}}catch(e){}}
+const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
+async function wake(on){try{if(on&&!WL&&'wakeLock' in navigator){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){const w=WL;WL=null;await w.release()}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PL&&!PL.fin&&!PL.pz)wake(true)});   // the browser drops the lock when hidden
+function startRoutine(i){const r=S.routines[i];if(!r)return;audio();
+ const seq=[{n:'Get ready',s:5,lead:1}];for(let rd=1;rd<=Math.max(1,num(r.rounds));rd++)r.steps.forEach(x=>{if(num(x.s)>0)seq.push({n:x.n||'Step',s:Math.round(num(x.s)),rd})});
+ if(seq.length<2){toast('Can’t start: add a step with some seconds first');return}
+ PL={r,seq,i:0,end:Date.now()+5e3,pz:0,left:0,last:-1,t0:Date.now()};wake(true);clearInterval(PLT);PLT=setInterval(ptick,200);navSync();drawPlay()}
+function goStep(i){const P=PL;P.i=i;P.last=-1;const s=P.seq[i];P.end=Date.now()+s.s*1e3;if(P.pz)P.left=s.s*1e3;beep(i==P.seq.length-1?990:880,1,.25);buzz(60);window.Feedback&&Feedback.hap('select');drawPlay()}
+function ptick(){const P=PL;if(!P||P.pz||P.fin)return;const now=Date.now();
+ if(now>=P.end){if(P.i+1>=P.seq.length)return finish();let i=P.i+1;while(i+1<P.seq.length&&now>=P.end+P.seq[i].s*1e3){P.end+=P.seq[i].s*1e3;i++}   // catch up after a sleep
+  const late=now-P.end;goStep(i);P.end-=Math.min(late,P.seq[i].s*1e3-500);return}
+ const left=Math.ceil((P.end-now)/1e3);if(left!=P.last){P.last=left;if(left<=3&&left>=1&&P.seq[P.i].s>5)beep(660,1,.1);drawPlay()}}
+function finish(){const P=PL;P.fin=1;clearInterval(PLT);wake(false);const sec=Math.round(sum(P.seq.slice(1),x=>x.s));
+ S.log.push({d:tdy(),rid:P.r.id,n:P.r.n,sec});if(S.log.length>500)S.log.splice(0,S.log.length-500);save();
+ beep(1047,3,.18);buzz([80,60,80,60,160]);confetti();toast('Done! '+P.r.n+' finished');drawPlay()}
+function stopPlay(){if(!PL)return;clearInterval(PLT);wake(false);PL=null;drawPlay();R();navSync()}
+function drawPlay(){const el=document.getElementById('play');if(!PL){el.hidden=true;el.innerHTML='';el.className='';return}
+ const P=PL,s=P.seq[P.i],c=TC.move;el.style.setProperty('--pc',c[0]);el.style.setProperty('--pc2',c[1]);el.hidden=false;
+ if(P.fin){patch(el,`<div class="ptop"><b>${esc(P.r.n)}</b><button class="g" data-a="plStop" aria-label="Close">${ICX}</button></div><div class="fin"><b>Nice work</b><span class="mu">${esc(P.r.n)} · ${mins(Math.round(sum(P.seq.slice(1),x=>x.s)))}</span><button data-a="plStop" style="min-width:180px">Close</button></div>`);return}
+ const ms=P.pz?P.left:Math.max(0,P.end-Date.now()),left=Math.ceil(ms/1e3),frac=s.s?Math.min(1,ms/(s.s*1e3)):0,C=2*Math.PI*88;
+ const tot=sum(P.seq,x=>x.s),done=sum(P.seq.slice(0,P.i),x=>x.s)+(s.s-ms/1e3),nx=P.seq[P.i+1],rds=Math.max(1,num(P.r.rounds));
+ el.className=(/^rest\b/i.test(s.n)||s.lead?'rest ':'')+'k-'+P.r.k;
+ patch(el,`<div class="ptop"><b>${esc(P.r.n)}</b><button class="g" data-a="plStop" aria-label="Stop">${ICX}</button></div><div class="pbar"><i style="width:${(done/tot*100).toFixed(1)}%"></i></div>
+ <span class="rd">${s.lead?'Starting soon':rds>1?'Round '+s.rd+' of '+rds:'Step '+P.i+' of '+(P.seq.length-1)}</span><p class="stp">${esc(s.n)}</p>
+ <div class="ring"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs><circle class="tr" cx="100" cy="100" r="88" fill="none" stroke-width="12"/><circle class="fg" cx="100" cy="100" r="88" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-frac)).toFixed(1)}"/></svg><span class="rnum" role="timer">${fmt(left)}</span></div>
+ <span class="mu nx">${nx?'Next: '+esc(nx.n)+' · '+dur(nx.s):'Last one'}</span>
+ <div class="ctl"><button class="g" data-a="plPrev" aria-label="Previous step" ${P.i?'':'disabled'}>${IC(I_PREV)}</button><button class="big" data-a="plPause" aria-label="${P.pz?'Resume':'Pause'}">${IC(P.pz?I_PLAY:I_PAUSE,30)}</button><button class="g" data-a="plNext" aria-label="Skip step">${IC(I_NEXT)}</button></div>`)}
+function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const C=['#ff4fa3','#ff8ac2','#f0378f','#ff7a59','#ffd166','#c4459e'],box=document.createElement('div');box.className='confetti';
+ for(let i=0;i<80;i++){const s=document.createElement('i'),w=6+Math.random()*6;s.style.cssText=`left:${Math.random()*100}%;width:${w}px;height:${w*(1+Math.random())}px;background:${C[i%C.length]};border-radius:${Math.random()<.4?'50%':'3px'};animation-delay:${Math.random()*.3}s;animation-duration:${1.5+Math.random()*1.2}s;--dx:${((Math.random()-.5)*180).toFixed(0)}px;--r:${(Math.random()*900-450).toFixed(0)}deg`;box.appendChild(s)}
+ document.body.appendChild(box);setTimeout(()=>box.remove(),3200)}
 // Set today's glasses; a toast and a buzz when you first reach the goal
 function setWater(n){const t=tdy(),was=water(),g=num(S.set.water);n=Math.max(0,Math.min(99,n));if(n)S.water[t]=n;else delete S.water[t];save();R();
  if(was<g&&n>=g)toast('Done! You reached your water goal');else window.Feedback&&Feedback.hap('tick')}
@@ -319,6 +404,15 @@ const ACT={
  dlgBtn:d=>{const f=DLG&&DLG.b[+d.i];closeDlg();f&&f()},
  // generic rows
  del:d=>del(d.p,+d.i),
+ // routines
+ play:d=>{EDR=null;startRoutine(+d.i)}, plStop:stopPlay,
+ plPause:()=>{const P=PL;if(!P)return;if(P.pz){P.pz=0;P.end=Date.now()+P.left;wake(true)}else{P.pz=1;P.left=Math.max(0,P.end-Date.now());wake(false)}window.Feedback&&Feedback.hap('tick');drawPlay()},
+ plNext:()=>{if(!PL)return;PL.i+1>=PL.seq.length?finish():goStep(PL.i+1)}, plPrev:()=>{if(PL&&PL.i)goStep(PL.i-1)},
+ rtEdit:d=>{const r=S.routines[+d.i];EDR=EDR==r.id?null:r.id;R()}, rtDone:()=>{EDR=null;R();toast('Saved')},
+ rtNew:()=>{const r={id:uid('r'),n:'New routine',k:'stretch',rounds:1,steps:[{id:uid('s'),n:'Stretch',s:30}]};S.routines.push(r);EDR=r.id;save();R();
+  requestAnimationFrame(()=>{const el=document.querySelector('.edr input[type=text]');if(el){el.scrollIntoView({block:'center',behavior:'smooth'});el.select()}})},
+ stepAdd:d=>{const r=S.routines[+d.i],l=r.steps[r.steps.length-1];r.steps.push({id:uid('s'),n:r.k=='interval'?'Work':r.k=='breath'?'Breathe in':'Stretch',s:l?l.s:30});save();R()},
+ rtDel:d=>{EDR=null;del('routines',+d.i)},
  // medications
  medAdd:addMed, dose:(d,el)=>takeDose(d.k,el.checked),
  timeAdd:d=>{const m=S.meds[+d.i];m.times.push(m.times[m.times.length-1]<'20:00'?'20:00':'12:00');save();R()},
@@ -397,8 +491,8 @@ function slideIn(dir){const m=APP(),w=innerWidth;m.style.willChange='transform,o
  m.style.transition=`transform .22s ${EZ_IN},opacity .16s ease-out`;m.style.transform='translate3d(0,0,0)';m.style.opacity='1';
  setTimeout(()=>{m.style.transition='';m.style.transform='';m.style.opacity='';m.style.willChange=''},240)}
 // Levels below Today: any other tab (or Settings) 1; an open popup adds one. Add a term for every editor or sub-view.
-function navDepth(){return (T=='today'?0:1)+(DLG?1:0)}
-function navUp(){if(DLG)return closeDlg();if(T!='today')goTab('today')}
+function navDepth(){return (T=='today'?0:1)+(EDR?1:0)+(PL?1:0)+(DLG?1:0)}
+function navUp(){if(DLG)return closeDlg();if(PL)return stopPlay();if(EDR){EDR=null;return R()}if(T!='today')goTab('today')}
 // ---- Phone back button (the same block as the other Big apps) ----
 // Every open layer (a popup, an editor, a sub-view, any tab but the first) has one browser-history entry,
 // so Back closes the top layer and only leaves the app from the first tab with nothing open.
@@ -411,7 +505,7 @@ addEventListener('popstate',e=>{if(HPOP){HPOP=0;navSync();return}
  const to=Math.max(0,(e.state&&e.state.nav)||0);if(to>HD){HD=to;navSync();return}   // Forward: undo it
  let n=HD-to;HD=to;while(n-->0&&navDepth()>0)navUp();navSync()});
 ['pointerup','touchend','keydown'].forEach(t=>addEventListener(t,()=>setTimeout(navSync),true));
-function goTab(id){if(id==T){scrollTo({top:0,behavior:'smooth'});return}const o=TABS.map(t=>t[0]),dir=o.indexOf(id)>o.indexOf(T)?1:-1;T=id;R();scrollTo(0,0);slideIn(T=='more'?1:dir)}
+function goTab(id){EDR=null;if(id==T){scrollTo({top:0,behavior:'smooth'});return}const o=TABS.map(t=>t[0]),dir=o.indexOf(id)>o.indexOf(T)?1:-1;T=id;R();scrollTo(0,0);slideIn(T=='more'?1:dir)}
 
 // =====================================================================
 // 10. GESTURES
@@ -426,7 +520,7 @@ function mkPeek(id){let p=document.getElementById('peek');
 const rmPeek=()=>{const p=document.getElementById('peek');if(p)p.remove()};
 (function(){let sx=0,sy=0,lx=0,lt=0,vx=0,ax=null,ok=false,busy=false;const W=()=>innerWidth,nav=()=>document.getElementById('nav');
  const mv=(el,x,tr)=>{el.style.transition=tr||'none';el.style.transform=`translate3d(${x}px,0,0)`};
- document.addEventListener('touchstart',e=>{const t=e.target;ok=!busy&&!DLG&&T!='more'&&e.touches.length==1&&!t.closest('input,select,textarea,nav,header,.dh');ax=null;if(!ok)return;sx=lx=e.touches[0].clientX;sy=e.touches[0].clientY;lt=performance.now();vx=0},{passive:true});
+ document.addEventListener('touchstart',e=>{const t=e.target;ok=!busy&&!DLG&&!PL&&T!='more'&&e.touches.length==1&&!t.closest('input,select,textarea,nav,header,.dh');ax=null;if(!ok)return;sx=lx=e.touches[0].clientX;sy=e.touches[0].clientY;lt=performance.now();vx=0},{passive:true});
  document.addEventListener('touchmove',e=>{if(!ok)return;const x=e.touches[0].clientX,y=e.touches[0].clientY,dx=x-sx,dy=y-sy;
   if(ax==null){if(Math.abs(dx)<8&&Math.abs(dy)<8)return;ax=Math.abs(dx)>Math.abs(dy)*1.2?'x':'y';if(ax=='x'){APP().style.willChange='transform';nav().classList.add('drag')}}
   if(ax!='x')return;e.preventDefault();const now=performance.now();vx=.7*vx+.3*((x-lx)/Math.max(1,now-lt));lx=x;lt=now;
