@@ -112,6 +112,16 @@ body.dragmode{user-select:none;-webkit-user-select:none;cursor:grabbing}
 
 /* ===== App-specific styles go below this line, one commented section per feature ===== */
 
+/* ===== Medications ===== */
+.dose{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--bd)}.dose:first-of-type{border-top:0}
+.dose .tm{flex:none;width:72px;font:600 15px/1.2 var(--fd);color:var(--pc)}.dose .nm{flex:1;min-width:0}.dose .nm b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dose.dn .nm b{opacity:.55;text-decoration:line-through}.tag.due{color:var(--wn);background:color-mix(in srgb,var(--wn) 14%,transparent)}
+.med{padding:10px 0;border-top:1px solid var(--bd)}.med:first-of-type{border-top:0;padding-top:0}
+.med>.row:first-child input[type=text]{font-weight:700}
+.times{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.times span{display:flex;align-items:center;background:var(--fld);border-radius:12px;padding-right:2px}
+.times input[type=time]{width:auto;background:transparent;padding:6px 4px 6px 10px}.times button.x{padding:6px}
+.newmed{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.newmed input[type=text]:first-child{grid-column:1/-1}
+
 /* ===== Water ===== */
 .wtop{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}.wtop b{font:600 28px/1.1 var(--fd)}
 .glasses{display:flex;flex-wrap:wrap;gap:2px;margin:10px -4px 4px}
@@ -210,6 +220,11 @@ const bkNag=()=>needBk()?`<div class="card wide"><h3><span>Back up your habits?<
 // =====================================================================
 const rSecs=r=>sum(r.steps,s=>num(s.s))*Math.max(1,num(r.rounds));   // one full play of a routine
 const water=()=>num(S.water[tdy()]);
+// Today's doses, earliest first: one per medication per time of day
+const doses=()=>{const tk=S.taken[tdy()]||{},now=new Date(),hm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+ return S.meds.flatMap(m=>[...new Set(m.times.filter(Boolean))].map(t=>({m,t,k:m.id+'@'+t,at:tk[m.id+'@'+t],due:t<=hm}))).sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0)};
+const tm=t=>!t?'':new Date('2000-01-01T'+t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});   // '08:00' -> '8:00 AM'
+const clockOf=ms=>new Date(ms).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
 const mins=s=>s<60?s+' sec':Math.round(s/60)+' min';
 
 // =====================================================================
@@ -247,15 +262,25 @@ function waterCard(){const n=water(),g=Math.max(1,num(S.set.water)),k=Math.min(2
  <div class="glasses">${Array.from({length:k},(_,i)=>`<button class="${i<n?'f':''}" data-a="glass" data-n="${i+1}" aria-label="${i+1} glass${i?'es':''}">${GLASS(i<n)}</button>`).join('')}</div>
  <div class="row"><button class="g bd" data-a="wSub" ${n?'':'disabled'}>Remove one</button><button data-a="wAdd" style="flex:1">Add a glass</button></div></div>`}
 
-function vToday(){
+// Today's doses to tick off. A dose turns "Due" once its time has passed.
+function medsCard(){const ds=doses();
+ if(!ds.length)return `<div class="card"><h2>Medications</h2><p class="mu" style="margin:0 0 10px">Add your medications and their times, then tick each dose off here.</p><button class="g bd" data-a="tab" data-id="meds">Add a medication</button></div>`;
+ return `<div class="card"><h2>Medications</h2>${ds.map(x=>`<label class="dose${x.at?' dn':''}"><span class="tm">${tm(x.t)}</span><span class="nm"><b>${esc(x.m.n)}</b><span class="mu">${esc(x.m.dose||'')}${x.at?(x.m.dose?' · ':'')+'Taken '+clockOf(x.at):''}</span></span>${!x.at&&x.due?'<span class="tag due">Due</span>':''}<input type="checkbox" ${x.at?'checked':''} data-a="dose" data-k="${esc(x.k)}" aria-label="Taken"></label>`).join('')}</div>`}
+
+function vToday(){const ds=doses(),dn=ds.filter(x=>x.at).length;
  return hello()+(S.set.welcome?welcome():'')+bkNag()+
- `<div class="pcb"><span>Today</span><b>${longDate(tdy())}</b></div>`+waterCard()}
+ (ds.length?`<div class="pcb"><span>Doses taken today</span><b>${dn} of ${ds.length}</b></div>`:`<div class="pcb"><span>Today</span><b>${longDate(tdy())}</b></div>`)+medsCard()+waterCard()}
 
 function vMove(){
  return `<div class="card"><h2>Routines</h2>${S.routines.map(r=>`<div class="ln"><span>${esc(r.n)}</span><b class="mu">${mins(rSecs(r))}</b></div>`).join('')||'<p class="mu" style="margin:0">Nothing here yet.</p>'}</div>`}
 
 function vMeds(){
- return `<div class="card"><h2>Medications</h2><p class="mu" style="margin:0">Nothing here yet.</p></div>`}
+ return `<div class="card"><h2>Your medications</h2>${S.meds.map((m,i)=>`<div class="med" data-dl="meds" data-di="${i}"><div class="row ed">${DH}${I('meds.'+i+'.n')}${X('meds',i)}</div>
+  <div class="row ed"><span class="mu" style="width:16px"></span>${I('meds.'+i+'.dose').replace('<input','<input placeholder="Add a dose"')}</div>
+  <div class="times" style="margin-left:24px">${m.times.map((t,j)=>`<span><input type="time" value="${esc(t)}" data-p="meds.${i}.times.${j}" data-t="s" aria-label="Time">${m.times.length>1?`<button class="x" data-a="timeDel" data-i="${i}" data-j="${j}" aria-label="Remove this time">${ICX}</button>`:''}</span>`).join('')}<button class="g" data-a="timeAdd" data-i="${i}">Add a time</button></div></div>`).join('')||'<p class="mu" style="margin:0">Nothing here yet. Add your first one below.</p>'}
+ <div class="newmed"><input id="mN" type="text" placeholder="Name, e.g. Vitamin D" enterkeyhint="next"><input id="mD" type="text" placeholder="Dose, e.g. 1 tablet"><input id="mT" type="time" value="08:00" aria-label="Time"></div>
+ <button data-a="medAdd" style="width:100%;margin-top:10px">Add medication</button>${flash()}</div>
+ <div class="card"><h2>About reminders</h2><p class="mu" style="margin:0">While Big Healthy is open, it tells you when a dose is due. It can’t alert you when the app is closed, so keep your phone’s own alarm for anything you can’t miss.</p></div>`}
 
 function vMore(){
  return `<div class="card"><h2>Settings</h2><div class="sec">Appearance</div><div class="seg qm">${[['system','Auto'],['daynight','Day/Night'],['light','Light'],['dark','Dark']].map(([v,l])=>`<button class="${S.set.theme==v?'on':''}" data-a="theme" data-v="${v}">${l}</button>`).join('')}</div>${window.Feedback?Feedback.view('qm'):''}
@@ -269,6 +294,18 @@ function vMore(){
 // =====================================================================
 // 8. ACTIONS (buttons/selects/checkboxes with data-a="name" call ACT.name(dataset, element))
 // =====================================================================
+function addMed(){const n=document.getElementById('mN').value.trim(),dose=document.getElementById('mD').value.trim(),t=document.getElementById('mT').value||'08:00';
+ if(!n){toast('Enter a name first');return}
+ S.meds.push({id:uid('m'),n,dose,times:[t]});document.getElementById('mN').value='';document.getElementById('mD').value='';FL='Added “'+n+'”';save();R();FL=''}
+// Tick a dose off (or untick it) for today
+function takeDose(k,on){const t=tdy(),tk=S.taken[t]=S.taken[t]||{},m=S.meds.find(x=>k.startsWith(x.id+'@'));
+ if(on){tk[k]=Date.now();save();R();toast('Logged'+(m?' '+m.n:''))}else{delete tk[k];if(!Object.keys(tk).length)delete S.taken[t];save();R();window.Feedback&&Feedback.hap('tick')}}
+// While the app is open: a toast when a dose comes due, and a redraw each minute so "Due" tags and the date stay current
+// Doses already due when the app opens don't pop up; the Due tags show them instead.
+const NOTED=new Set();let MT0=1;
+function medTick(){if(!S)return;doses().forEach(x=>{const k=tdy()+x.k;if(x.due&&!x.at&&!NOTED.has(k)){if(!MT0)toast('Time for '+x.m.n+(x.m.dose?', '+x.m.dose:''));NOTED.add(k)}});
+ if(MT0){MT0=0;return}if(!DLG&&!document.hidden&&T=='today'&&!document.activeElement.matches('input'))R()}
+setInterval(medTick,30000);
 // Set today's glasses; a toast and a buzz when you first reach the goal
 function setWater(n){const t=tdy(),was=water(),g=num(S.set.water);n=Math.max(0,Math.min(99,n));if(n)S.water[t]=n;else delete S.water[t];save();R();
  if(was<g&&n>=g)toast('Done! You reached your water goal');else window.Feedback&&Feedback.hap('tick')}
@@ -282,6 +319,10 @@ const ACT={
  dlgBtn:d=>{const f=DLG&&DLG.b[+d.i];closeDlg();f&&f()},
  // generic rows
  del:d=>del(d.p,+d.i),
+ // medications
+ medAdd:addMed, dose:(d,el)=>takeDose(d.k,el.checked),
+ timeAdd:d=>{const m=S.meds[+d.i];m.times.push(m.times[m.times.length-1]<'20:00'?'20:00':'12:00');save();R()},
+ timeDel:d=>{const m=S.meds[+d.i],j=+d.j,t=m.times.splice(j,1)[0];save();R();toast('Removed '+tm(t),()=>{m.times.splice(j,0,t);save();R()})},
  // water
  glass:d=>setWater(+d.n==water()?+d.n-1:+d.n), wAdd:()=>setWater(water()+1), wSub:()=>setWater(water()-1),
  wGoal:(d,el)=>{S.set.water=Math.max(1,Math.min(24,Math.round(num(el.value))||8));save();R();toast('Saved your water goal')},
@@ -301,6 +342,7 @@ document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
  if(d.p&&d.t)up(d.p,t.type=='checkbox'?t.checked:t.value,d.t);
  else if(d.a&&t.tagName!='BUTTON')ACT[d.a](d,t);
  if(t.type=='checkbox'&&t.checked&&t.isConnected){t.classList.remove('pop');void t.offsetWidth;t.classList.add('pop');setTimeout(()=>t.classList.remove('pop'),320)}});
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&/^m[NDT]$/.test(e.target.id)){e.preventDefault();e.target.id=='mN'?document.getElementById('mD').focus():addMed()}});
 document.addEventListener('toggle',e=>{const k=e.target.dataset&&e.target.dataset.o;if(k!=null)O[k]=e.target.open},true); // toggle doesn't bubble, so capture
 
 // =====================================================================
@@ -427,6 +469,7 @@ const rmPeek=()=>{const p=document.getElementById('peek');if(p)p.remove()};
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 load();
 R();
+medTick();
 // Sync across devices (sync.js)
 window.CloudSync&&CloudSync.init({app:'habits',name:'Big Healthy',key:LS,what:'your habits',version:()=>MIGRATIONS.length,btn:'',btn2:'g bd',
  card:b=>`<div class="card"><h2>Sync across devices</h2>${b}</div>`,

@@ -5,6 +5,9 @@ Stretch routines, an interval timer, breathing exercises, water and medication c
 ## Features
 
 - Three tabs: **Today** for what's due today, **Move** for stretch, interval and breathing routines, and **Meds** for your medications
+- Medications on **Meds**: name, dose and one or more times a day, edited in place, with drag to reorder and Undo on delete
+- Today's doses on **Today** in time order: tick each one off as you take it, see when you took it, and spot missed ones by their **Due** tag
+- While the app is open, a pop-up tells you when a dose comes due. It can't alert you when the app is closed, so keep a phone alarm for anything you can't miss.
 - Water tracking on **Today**: tap a glass for each one you drink, with a progress bar toward your daily goal (8 glasses unless you change it under **Settings > Daily water goal**)
 - Light, dark and automatic themes, plus a Day/Night option that switches to dark at 6pm and back to light at 6am
 - Light haptic ticks when you save, delete, finish or toggle something, and buttons that visibly press in on every tap. Turn haptics off under **Settings > Haptics**.
