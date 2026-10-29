@@ -149,6 +149,8 @@ body.dragmode{user-select:none;-webkit-user-select:none;cursor:grabbing}
 #play .ctl button.big{width:78px;height:78px}
 #play .ctl button.g{background:var(--card);border:1px solid var(--bd);color:var(--tx)}
 #play .fin{display:flex;flex-direction:column;align-items:center;gap:12px;margin:auto 0;text-align:center}#play .fin b{font:600 34px/1.1 var(--fd)}
+.orb{position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--pc2) 55%,transparent),color-mix(in srgb,var(--pc) 30%,transparent) 70%);transition:transform .22s linear}
+#play.k-breath .rnum{font-size:44px}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}.confetti i{position:absolute;top:-20px;animation:fall linear forwards}
 @keyframes fall{to{transform:translate(var(--dx),105vh) rotate(var(--r))}}
 
@@ -363,15 +365,19 @@ function beep(f=880,n=1,len=.14){if(!AC)return;try{const t=AC.currentTime;for(le
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 async function wake(on){try{if(on&&!WL&&'wakeLock' in navigator){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}else if(!on&&WL){const w=WL;WL=null;await w.release()}}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PL&&!PL.fin&&!PL.pz)wake(true)});   // the browser drops the lock when hidden
+// Breathing: the circle grows on "Breathe in", stays put on "Hold" and shrinks on "Breathe out"
+const ph=n=>/\bout\b/i.test(n)?'out':/\bin\b/i.test(n)?'in':'hold',LO=.42;
+function orbScale(P,frac){let lv=LO;for(let i=1;i<P.i;i++){const p=ph(P.seq[i].n);lv=p=='in'?1:p=='out'?LO:lv}
+ const s=P.seq[P.i];if(s.lead)return LO;const p=ph(s.n),to=p=='in'?1:p=='out'?LO:lv;return lv+(to-lv)*(1-frac)}
 function startRoutine(i){const r=S.routines[i];if(!r)return;audio();
  const seq=[{n:'Get ready',s:5,lead:1}];for(let rd=1;rd<=Math.max(1,num(r.rounds));rd++)r.steps.forEach(x=>{if(num(x.s)>0)seq.push({n:x.n||'Step',s:Math.round(num(x.s)),rd})});
  if(seq.length<2){toast('Can’t start: add a step with some seconds first');return}
  PL={r,seq,i:0,end:Date.now()+5e3,pz:0,left:0,last:-1,t0:Date.now()};wake(true);clearInterval(PLT);PLT=setInterval(ptick,200);navSync();drawPlay()}
-function goStep(i){const P=PL;P.i=i;P.last=-1;const s=P.seq[i];P.end=Date.now()+s.s*1e3;if(P.pz)P.left=s.s*1e3;beep(i==P.seq.length-1?990:880,1,.25);buzz(60);window.Feedback&&Feedback.hap('select');drawPlay()}
+function goStep(i){const P=PL;P.i=i;P.last=-1;const s=P.seq[i];P.end=Date.now()+s.s*1e3;if(P.pz)P.left=s.s*1e3;P.r.k=='breath'?beep(523,1,.35):beep(i==P.seq.length-1?990:880,1,.25);buzz(60);window.Feedback&&Feedback.hap('select');drawPlay()}
 function ptick(){const P=PL;if(!P||P.pz||P.fin)return;const now=Date.now();
  if(now>=P.end){if(P.i+1>=P.seq.length)return finish();let i=P.i+1;while(i+1<P.seq.length&&now>=P.end+P.seq[i].s*1e3){P.end+=P.seq[i].s*1e3;i++}   // catch up after a sleep
   const late=now-P.end;goStep(i);P.end-=Math.min(late,P.seq[i].s*1e3-500);return}
- const left=Math.ceil((P.end-now)/1e3);if(left!=P.last){P.last=left;if(left<=3&&left>=1&&P.seq[P.i].s>5)beep(660,1,.1);drawPlay()}}
+ const left=Math.ceil((P.end-now)/1e3);if(left!=P.last){P.last=left;if(left<=3&&left>=1&&P.seq[P.i].s>5&&P.r.k!='breath')beep(660,1,.1);drawPlay()}else if(P.r.k=='breath')drawPlay()}   // breathing redraws often so the circle moves smoothly
 function finish(){const P=PL;P.fin=1;clearInterval(PLT);wake(false);const sec=Math.round(sum(P.seq.slice(1),x=>x.s));
  S.log.push({d:tdy(),rid:P.r.id,n:P.r.n,sec});if(S.log.length>500)S.log.splice(0,S.log.length-500);save();
  beep(1047,3,.18);buzz([80,60,80,60,160]);confetti();toast('Done! '+P.r.n+' finished');drawPlay()}
@@ -384,7 +390,7 @@ function drawPlay(){const el=document.getElementById('play');if(!PL){el.hidden=t
  el.className=(/^rest\b/i.test(s.n)||s.lead?'rest ':'')+'k-'+P.r.k;
  patch(el,`<div class="ptop"><b>${esc(P.r.n)}</b><button class="g" data-a="plStop" aria-label="Stop">${ICX}</button></div><div class="pbar"><i style="width:${(done/tot*100).toFixed(1)}%"></i></div>
  <span class="rd">${s.lead?'Starting soon':rds>1?'Round '+s.rd+' of '+rds:'Step '+P.i+' of '+(P.seq.length-1)}</span><p class="stp">${esc(s.n)}</p>
- <div class="ring"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs><circle class="tr" cx="100" cy="100" r="88" fill="none" stroke-width="12"/><circle class="fg" cx="100" cy="100" r="88" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-frac)).toFixed(1)}"/></svg><span class="rnum" role="timer">${fmt(left)}</span></div>
+ <div class="ring"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs><circle class="tr" cx="100" cy="100" r="88" fill="none" stroke-width="12"/><circle class="fg" cx="100" cy="100" r="88" fill="none" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-frac)).toFixed(1)}"/></svg>${P.r.k=='breath'?`<i class="orb" style="transform:scale(${orbScale(P,frac).toFixed(3)})"></i>`:''}<span class="rnum" role="timer">${fmt(left)}</span></div>
  <span class="mu nx">${nx?'Next: '+esc(nx.n)+' · '+dur(nx.s):'Last one'}</span>
  <div class="ctl"><button class="g" data-a="plPrev" aria-label="Previous step" ${P.i?'':'disabled'}>${IC(I_PREV)}</button><button class="big" data-a="plPause" aria-label="${P.pz?'Resume':'Pause'}">${IC(P.pz?I_PLAY:I_PAUSE,30)}</button><button class="g" data-a="plNext" aria-label="Skip step">${IC(I_NEXT)}</button></div>`)}
 function confetti(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
