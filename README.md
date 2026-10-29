@@ -1,6 +1,6 @@
 # Big Healthy Habits
 
-Stretch routines, an interval timer, breathing exercises, water and medication check-offs. It's part of the Big apps, alongside [Big Minty Finances](https://github.com/dontdoubtdusty/budget), [Big Saucy Recipes](https://github.com/dontdoubtdusty/cooking), [Big Skinny Health](https://github.com/dontdoubtdusty/diet), [Big Tidy Reminders](https://github.com/dontdoubtdusty/reminders) and [Big Shiny Rounds](https://github.com/dontdoubtdusty/cleaning). It's one file (`index.html`) with no build step and no server.
+Stretch routines, an interval timer, breathing exercises, water and medication check-offs. It's part of the Big apps, alongside [Big Minty Finances](https://github.com/dontdoubtdusty/budget), [Big Saucy Recipes](https://github.com/dontdoubtdusty/cooking), [Big Skinny Health](https://github.com/dontdoubtdusty/diet), [Big Tidy Reminders](https://github.com/dontdoubtdusty/reminders) and [Big Shiny Rounds](https://github.com/dontdoubtdusty/cleaning). You can also open it inside [Big Juicy Suite](https://github.com/dontdoubtdusty/suite), which holds all the Big apps in one place. It's one file (`index.html`) with no build step and no server.
 
 ## Features
 
