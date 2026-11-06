@@ -169,6 +169,7 @@ body.dragmode{user-select:none;-webkit-user-select:none;cursor:grabbing}
 </style></head><body><header class="top"><span class="tt"><svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#f0378f"/><circle cx="16" cy="16" r="12.2" fill="#ffe0ef"/><circle cx="16" cy="16" r="10.6" fill="#ff7ab8"/><path d="M16 6v20M6 16h20M8.6 8.6l14.8 14.8M23.4 8.6 8.6 23.4" stroke="#ffe0ef" stroke-width="1.7" stroke-linecap="round"/><circle cx="16" cy="16" r="2.2" fill="#ffe0ef"/></svg><span><span class="jz">Big Healthy</span> Habits <span class="ver">v0.07</span></span></span><button id="gear" class="gear" aria-label="Settings" data-a="gear"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></header><div class="vclip"><main id="app" class="view"></main></div><nav id="nav"></nav><div id="toast" role="status" aria-live="polite"></div><div id="play" hidden></div><div id="dlg" hidden></div>
 <script src="feedback.js"></script>
 <script src="sync.js"></script>
+<script src="push.js"></script>
 <script>
 // =====================================================================
 // 1. CONSTANTS
@@ -231,7 +232,7 @@ function load(){try{S=JSON.parse(localStorage.getItem(LS))}catch(e){}if(!S)S=see
 // Saving: write to storage a moment later (and immediately when the app is hidden or closed)
 let SVT=0,SVFAIL=0;
 // Saving can fail (storage full, private browsing, blocked site data). Say so once instead of failing silently.
-function flush(){clearTimeout(SVT);SVT=0;try{const t=JSON.stringify(S);localStorage.setItem(LS,t);SVFAIL=0;window.CloudSync&&CloudSync.saved(t)}catch(e){if(!SVFAIL){SVFAIL=1;setTimeout(()=>toast('Couldn’t save on this device. Download a backup in Settings.'),0)}}}
+function flush(){clearTimeout(SVT);SVT=0;try{const t=JSON.stringify(S);localStorage.setItem(LS,t);SVFAIL=0;window.CloudSync&&CloudSync.saved(t);window.Push&&Push.publish()}catch(e){if(!SVFAIL){SVFAIL=1;setTimeout(()=>toast('Couldn’t save on this device. Download a backup in Settings.'),0)}}}
 const save=()=>{clearTimeout(SVT);SVT=setTimeout(flush,400)};
 addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
 
@@ -334,11 +335,12 @@ function vMeds(){
   <div class="times" style="margin-left:24px">${m.times.map((t,j)=>`<span><input type="time" value="${esc(t)}" data-p="meds.${i}.times.${j}" data-t="s" aria-label="Time">${m.times.length>1?`<button class="x" data-a="timeDel" data-i="${i}" data-j="${j}" aria-label="Remove this time">${ICX}</button>`:''}</span>`).join('')}<button class="g" data-a="timeAdd" data-i="${i}">Add a time</button></div></div>`).join('')||'<p class="mu" style="margin:0">Nothing here yet. Add your first one below.</p>'}
  <div class="newmed"><input id="mN" type="text" placeholder="Name, e.g. Vitamin D" enterkeyhint="next"><input id="mD" type="text" placeholder="Dose, e.g. 1 tablet"><input id="mT" type="time" value="08:00" aria-label="Time"></div>
  <button data-a="medAdd" style="width:100%;margin-top:10px">Add medication</button>${flash()}</div>
- <div class="card"><h2>About reminders</h2><p class="mu" style="margin:0">While Big Healthy is open, it tells you when a dose is due. It can’t alert you when the app is closed, so keep your phone’s own alarm for anything you can’t miss.</p></div>`}
+ <div class="card"><h2>About reminders</h2><p class="mu" style="margin:0">With notifications on (Settings &gt; Notifications), Big Healthy alerts you when a dose is due, even when the app is closed. A dose you’ve already ticked off won’t alert. If a dose really matters, keep a phone alarm too, because phones can delay or hold back notifications.</p></div>`}
 
 function vMore(){
  return `<div class="card"><h2>Settings</h2><div class="sec">Appearance</div><div class="seg qm">${[['system','Auto'],['daynight','Day/Night'],['light','Light'],['dark','Dark']].map(([v,l])=>`<button class="${S.set.theme==v?'on':''}" data-a="theme" data-v="${v}">${l}</button>`).join('')}</div>${window.Feedback?Feedback.view('qm'):''}
  <div class="sec" style="margin-top:12px">Daily water goal</div><div class="row"><input type="number" min="1" max="24" step="1" inputmode="numeric" value="${esc(S.set.water)}" data-a="wGoal"><span class="mu">glasses a day</span></div></div>
+ ${window.Push?Push.view():''}
  ${window.CloudSync?CloudSync.view():''}
  <div class="card"><h2>Backup & restore</h2><p class="mu">Everything is saved in this browser only. Download a backup now and then to keep it safe, or to move it to another device.</p>
  <p class="mu" style="font-weight:700">${S.set.lastBk?'Last backup: '+longDate(iso(new Date(S.set.lastBk))):'No backup yet.'}</p>
@@ -577,4 +579,7 @@ medTick();
 window.CloudSync&&CloudSync.init({app:'habits',name:'Big Healthy',key:LS,what:'your habits',version:()=>MIGRATIONS.length,btn:'',btn2:'g bd',
  card:b=>`<div class="card"><h2>Sync across devices</h2>${b}</div>`,
  apply:obj=>{if(!VALID(obj))throw 0;S=obj;migrate();save();flush();R()},render:()=>R()});
+// Push notifications (push.js): tell the server your dose times so it can alert you when the app is closed
+window.Push&&Push.init({app:'habits',name:'Healthy',render:()=>R(),
+ schedule:()=>{const t=tdy();return {on:true,meds:S.meds.map(m=>({id:m.id,n:m.n,dose:m.dose||'',times:[...new Set(m.times.filter(Boolean))]})),taken:{date:t,keys:Object.keys(S.taken[t]||{})}}}});
 </script></body></html>

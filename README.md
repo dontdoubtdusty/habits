@@ -12,7 +12,7 @@ Stretch routines, an interval timer, breathing exercises, water and medication c
 - Finished routines show under **Recently** on the Move tab
 - Medications on **Meds**: name, dose and one or more times a day, edited in place, with drag to reorder and Undo on delete
 - Today's doses on **Today** in time order: tick each one off as you take it, see when you took it, and spot missed ones by their **Due** tag
-- While the app is open, a pop-up tells you when a dose comes due. It can't alert you when the app is closed, so keep a phone alarm for anything you can't miss.
+- Dose notifications: turn them on under **Settings > Notifications** and your phone alerts you when a dose comes due, even when the app is closed. A dose you've already ticked off doesn't alert. They need you to be signed in to sync, and on iPhone they only work from the Home Screen app. Keep a phone alarm for anything you can't miss, since phones can delay notifications. While the app is open, a pop-up also tells you when a dose is due.
 - Water tracking on **Today**: tap a glass for each one you drink, with a progress bar toward your daily goal (8 glasses unless you change it under **Settings > Daily water goal**)
 - Light, dark and automatic themes, plus a Day/Night option that switches to dark at 6pm and back to light at 6am
 - Light haptic ticks when you save, delete, finish or toggle something, and buttons that visibly press in on every tap. Turn haptics off under **Settings > Haptics**.
@@ -37,6 +37,7 @@ Once it's installed, it opens full screen with its own icon and works without an
 | --- | --- |
 | `index.html` | The whole app |
 | `sync.js` | Optional sync across devices (shared by all the Big apps) |
+| `push.js` | Notifications when the app is closed (shared with Big Tidy). Needs the Cloud Function in `notify-functions`. |
 | `feedback.js` | Haptic ticks and button press feedback (shared by all the Big apps) |
 | `manifest.webmanifest` | The app's name, colors and icons, used when it's installed |
 | `sw.js` | Saves a copy of the app so it opens offline |
